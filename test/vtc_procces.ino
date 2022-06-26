@@ -43,12 +43,40 @@ extern unsigned int Total_Power_Limit;
 unsigned char SyncronizedZones = RESET;
 unsigned char ZoneProccesArray[NUMBER_OF_ZONE] = {0, 0, 0, 0};
 unsigned char LastSuspendZone = 0;
-
+//--------------------------------------------------------
+void Run_Procces(void)  // per 1 seconds
+{
+    static unsigned char timeCount[NUMBER_OF_ZONE];
+    unsigned char zone;
+    
+    for(zone = 0; zone < NUMBER_OF_ZONE; zone++)
+    {
+        if(Zone_Step[zone] > 0)
+        {
+            if((Zone_RunTime[zone] < 180) && (ZonePower.Value & (1 << zone)))
+            {
+                Zone_RunTime[zone] += 1;
+            }
+        }
+        else
+        {
+            if(Zone_RunTime[zone])
+            {
+                if(timeCount[zone]-- == 0)
+                {
+                    timeCount[zone] = ((180 - (Zone_RunTime[zone])) / 6) + 1; //heat down calculate
+                    Zone_RunTime[zone]--;
+                }
+            }
+        }
+    }
+}
+//--------------------------------------------------------
 void Vtc_Procces(void)  // per 1 seconds
 {
-    static unsigned int   work_timer[NUMBER_OF_ZONE] = {0, 0, 0, 0};
-    static Work_State_t   work_state[NUMBER_OF_ZONE];
-    static unsigned char   Zone_Step_Mem[NUMBER_OF_ZONE] = {0, 0, 0, 0};
+    static unsigned int work_timer[NUMBER_OF_ZONE] = {0, 0, 0, 0};
+    static Work_State_t work_state[NUMBER_OF_ZONE];
+    static unsigned char Zone_Step_Mem[NUMBER_OF_ZONE] = {0, 0, 0, 0};
     unsigned char zone, activezones, i;
 
     //------------------------

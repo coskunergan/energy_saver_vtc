@@ -15,7 +15,7 @@
 #define RESET 0
 #define NUMBER_OF_ZONE 4
 
-int LedState = 0;
+int LedState = 1;
 long lastTime = 0;
 
 unsigned int Total_Power_Limit = 3600;
@@ -45,7 +45,8 @@ void loop()
 
     if((millis() - lastTime) > DELAY_PERIOD)
     {
-        LedState = !LedState;
+        //LedState = !LedState;
+        Run_Procces();
         Vtc_Procces();
         lastTime = millis();
     }
